@@ -1,0 +1,7 @@
+# NovaServe
+# Prevent PHP execution inside ticket attachments
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .phar
+<FilesMatch "\.(?i:php|phtml|php3|php4|php5|php7|phar|pl|py|cgi|sh)$">
+  Require all denied
+</FilesMatch>
+Options -Indexes -ExecCGI

@@ -1,0 +1,30 @@
+# Block all script execution in uploads. PHP files must never be run here.
+# Works on Apache (cPanel + XAMPP). Also add a per-directory .htaccess
+# inside each sub-folder for defence in depth.
+<FilesMatch "\.(?i:php|phtml|php3|php4|php5|php7|phar|pl|py|cgi|sh|asp|aspx|js)$">
+  Order allow,deny
+  Deny from all
+  # Apache 2.4 syntax fallback
+</FilesMatch>
+
+# Also deny via Apache 2.4 RequireAllDeny
+<IfModule mod_authz_core.c>
+  <FilesMatch "\.(?i:php|phtml|php3|php4|php5|php7|phar|pl|py|cgi|sh|asp|aspx|js)$">
+    Require all denied
+  </FilesMatch>
+</IfModule>
+
+# Defuse .htaccess so uploads can't introduce new rules
+<Files ".htaccess">
+  Order allow,deny
+  Deny from all
+</Files>
+<IfModule mod_authz_core.c>
+  <Files ".htaccess">
+    Require all denied
+  </Files>
+</IfModule>
+
+Options -ExecCGI -Indexes
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .phar
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .phar
