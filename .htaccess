@@ -1,0 +1,37 @@
+# NovaServe – root .htaccess
+# Harden the public-facing application.
+
+# Security headers
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Hide the application's internal files from the web
+<FilesMatch "\.(sql|log|lock|lock$|md|ini)$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+<IfModule mod_authz_core.c>
+  <FilesMatch "\.(sql|log|lock|md|ini)$">
+    Require all denied
+  </FilesMatch>
+</IfModule>
+
+# NOTE: install.php self-disables after a successful run (installer.lock + a
+# config flag). To hard-block the installer URL after install, delete these
+# lines and add a <Files "install.php"> Require all denied </Files> block, or
+# simply rename install.php.
+
+# Prevent directory listing
+Options -Indexes
+
+# Recover from duplicated application prefixes in stale redirects.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^Customer_Service/(.*)$ /Customer_Service/$1 [R=302,L,NE]
+</IfModule>
+
+# Serve index.php for the folder root
+DirectoryIndex index.php
